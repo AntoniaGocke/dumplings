@@ -1,0 +1,9 @@
+id: 1
+image: dumplings
+createdat: 2023-01-11T11:02:58.542950922Z
+relayaddress: localhost
+queryinterval: 3
+dirs:
+- client_1
+gendir: ""
+resultdir: /data/tests
