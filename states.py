@@ -5,6 +5,9 @@ import pandas as pd
 from FeatureCloud.app.engine.app import AppState, app_state, Role
 from sklearn.linear_model import LinearRegression
 
+name = 'dumplings'
+
+
 INPUT_DIR = '/mnt/input'
 OUTPUT_DIR = '/mnt/output'
 
@@ -17,6 +20,16 @@ TERMINAL_STATE = 'terminal'
 
 # FeatureCloud requires that apps define the at least the 'initial' state.
 # This state is executed after the app instance is started.
+
+@app_state(name= 'initial', role=Role.BOTH, app_name=name)
+"""
+read client model to unlearn
+read global model to set constraint
+"""
+class Read(Initialization):
+
+
+
 @app_state(INITIAL_STATE)
 class InitialState(AppState):
 
