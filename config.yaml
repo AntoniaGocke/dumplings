@@ -1,0 +1,7 @@
+dumplings:
+  hyperparameters:
+    delta: "None"
+    tau: "0.12"
+    optimizer: "optim.AdamW"
+    optimizer_params: {'lr':0.001, 'weight_decay': 0.05}
+    untrain_optimizer: optim.AdamW(unclient_model.parameters(), lr=0.001, weight_decay=0.05)
