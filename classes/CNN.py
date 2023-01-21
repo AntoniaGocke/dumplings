@@ -1,6 +1,9 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
+'''
+Model class for the input model, has to be the same as the Output from the fc-deep-learning app
+'''
 
 class CNN(nn.Module):
     def __init__(self, n_classes, in_features):

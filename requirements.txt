@@ -9,4 +9,7 @@ torch
 torchvision
 os
 PIL
-
+copy
+tqdm
+typing
+wandb
