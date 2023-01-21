@@ -5,4 +5,11 @@ pandas
 sklearn
 scikit-learn
 bottle
-
+torch
+torchvision
+os
+PIL
+copy
+tqdm
+typing
+wandb
