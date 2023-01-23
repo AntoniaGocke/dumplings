@@ -9,6 +9,7 @@ from torch import optim
 from torch.utils.data import DataLoader
 from torch import nn
 from sklearn import metrics
+from MNIST_Dataset import MNISTDataSet
 
 name = 'dumplings'
 
@@ -40,26 +41,28 @@ class InitialState(AppState):
         tau = config['tau']
         opt_lr = config['opt_lr']
         opt_weight_decay = config['opt_weight_decay']
-        input_img = config['input_img']
-        input_lab = config['input_lab']
+        input_file = config['input_file']
         input_model = config['input_model']
         self.store('delta', config['delta'])
         self.store('tau', config['tau'])
         self.store('opt_lr', config['opt_lr'])
         self.store('opt_weight_decay', config['opt_weight_decay'])
         # needs to be changed to input from one client, not whole mnist
-        self.store('input_img', config['input_img'])
-        self.store('input_model', config['input_model'])
+        self.store('input_file', config['input_file'])
         self.log(f'Done reading configuration.')
 
+        '''
+        np.load(input.npz)['images']
+        np.load(input.npz)['labels']
+        '''
         # read Images from npz
         self.log('Reading untraining images...')
-        inputImgs = np.load(f'{INPUT_DIR}/{input_img}')
+        inputImgs = np.load(f'{INPUT_DIR}/{input_file}')['images']
         self.store('input_images', inputImgs)
 
         #read labels from npz
         self.log('Reading untraining labels...')
-        inputLabs = np.load(f'{INPUT_DIR}/{input_lab}')
+        inputLabs = np.load(f'{INPUT_DIR}/{input_file}')['labels']
         self.store('input_lab', inputLabs)
 
         # load model
@@ -87,11 +90,19 @@ class ComputeState(AppState):
         images = self.load('input_img')
         labels = self.load('input_lab')
 
-        cl_model = CNN()
+        unclient_model = CNN()
 
         self.log('build train, val split for unlearning client')
         unclient_split = train_test_split(images, labels, stratify=labels, train_size=0.7)
         unclient_train_images, unclient_val_images, unclient_train_labels, unclient_val_labels = unclient_split
+
+        unclient_train_set = MNISTDataSet(images=images, labels=labels)
+
+        unclient_train_loader = DataLoader(unclient_train_set, batch_size=256, shuffle=True, num_workers=2,
+                                           persistent_workers=False)
+        unclient_val_set = MNISTDataSet(images=unclient_val_images, labels=unclient_val_labels)
+        unclient_val_loader = DataLoader(unclient_val_set, batch_size=128, shuffle=True, num_workers=2,
+                                         persistent_workers=False)
 
         unclient_train_loader = DataLoader(unclient_train_set, batch_size=256, shuffle=True, num_workers=2,
                                            persistent_workers=False)
@@ -113,8 +124,8 @@ class ComputeState(AppState):
                                         unclient_train_loader=unclient_train_loader,
                                         unclient_val_loader=unclient_val_loader,
                                         model=global_model,
-                                        client_train_loaders=client_train_loaders,
-                                        val_loader=val_loader,
+                                        client_train_loaders=None,
+                                        val_loader=None,
                                         criterion=criterion,
                                         optimizer=optimizer, verbose=True,
                                         metric=metrics.balanced_accuracy_score,
@@ -126,9 +137,24 @@ class ComputeState(AppState):
             federated_rounds=1,
             untrain_optimizer=untrain_optimizer)
 
-        if self.is_coordinator:
-            return AGGREGATE_STATE
-        else:
-            return COMPUTE_STATE
+        self.store('iteration', 0)
+        self.send_data_to_coordinator(unclient_model.coef_, unclient_model.intercept_)
+
+        return COMPUTE_STATE
+
+
+@app_state(WRITE_STATE)
+class WriteState(AppState):
+
+    def register(self):
+        self.register_transition(TERMINAL_STATE)
+
+    def run(self):
+        self.log('Output unlearned model')
+        model = self.load('model')
+        output_file = self.load('output_file')
+
+        return TERMINAL_STATE
+
 
 
