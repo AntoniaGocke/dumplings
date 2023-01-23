@@ -1,12 +1,17 @@
 dumplings:
 
-  input_file: 'mnist.npz'
+  input_img: 'mnist.npz'
+  input_lab: 'input_lab'
   input_model: 'model.pt'
+
+  fed_paramss:
+    batch_count:
+    epochs:
+    mode: 'FedAVG'
 
   hyper_params:
     delta: None
     tau: 0.12
     #OptimizerValues
-    optName: 'AdamW'
     opt_lr: 0.001
     opt_weight_decay: 0.05
