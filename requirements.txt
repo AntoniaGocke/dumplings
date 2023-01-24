@@ -5,4 +5,7 @@ pandas
 sklearn
 scikit-learn
 bottle
-
+torch
+torchvision
+tqdm
+typing
