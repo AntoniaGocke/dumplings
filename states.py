@@ -9,7 +9,7 @@ from torch import optim
 from torch.utils.data import DataLoader
 from torch import nn
 from sklearn import metrics
-from MNIST_Dataset import MNISTDataSet
+from classes.CustomDataset import CustomDataSet
 
 name = 'dumplings'
 
@@ -96,11 +96,11 @@ class ComputeState(AppState):
         unclient_split = train_test_split(images, labels, stratify=labels, train_size=0.7)
         unclient_train_images, unclient_val_images, unclient_train_labels, unclient_val_labels = unclient_split
 
-        unclient_train_set = MNISTDataSet(images=images, labels=labels)
+        unclient_train_set = CustomDataSet(images=images, labels=labels)
 
         unclient_train_loader = DataLoader(unclient_train_set, batch_size=256, shuffle=True, num_workers=2,
                                            persistent_workers=False)
-        unclient_val_set = MNISTDataSet(images=unclient_val_images, labels=unclient_val_labels)
+        unclient_val_set = CustomDataSet(images=unclient_val_images, labels=unclient_val_labels)
         unclient_val_loader = DataLoader(unclient_val_set, batch_size=128, shuffle=True, num_workers=2,
                                          persistent_workers=False)
 
@@ -129,7 +129,7 @@ class ComputeState(AppState):
                                         criterion=criterion,
                                         optimizer=optimizer, verbose=True,
                                         metric=metrics.balanced_accuracy_score,
-                                        delta=delta, tau=tau, log=log)
+                                        delta=delta, tau=tau)
 
         untrained_global_model, untrained_client_models, untrained_client_model = unfed_gym.untrain(
             client_untrain_epochs=5,

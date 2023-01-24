@@ -7,7 +7,6 @@ import torch.optim.optimizer
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from typing import List, Callable, Tuple
-import wandb
 
 
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else 'cpu')
@@ -21,8 +20,7 @@ class Gym:
                  scheduler: object = None,
                  metric: Optional[Callable] = None,
                  verbose: bool = True,
-                 name: Union[str, int, None] = None,
-                 log: bool = False):
+                 name: Union[str, int, None] = None):
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.model = model.to(DEVICE)
@@ -33,7 +31,6 @@ class Gym:
         self.scaler = torch.cuda.amp.GradScaler()
         self.verbose = verbose
         self.name = name
-        self.log = log
 
     def train(self, epochs: int, eval_interval: int = 10) -> nn.Module:
         best_model = self.model
@@ -47,8 +44,6 @@ class Gym:
             for train_data in self.train_loader:
                 inputs, labels = train_data
                 loss = self._train_batch(inputs=inputs, labels=labels)
-                if self.log:
-                    wandb.log({f'train loss/{self.name}': loss})
                 if iterations % eval_interval == 0 and self.val_loader:
                     metric = self.eval()
                     if self.scheduler:
@@ -56,8 +51,6 @@ class Gym:
                     if best_metric < metric:
                         best_metric = metric
                         best_model = deepcopy(self.model)
-                    if self.log:
-                        wandb.log({f'{str(self.metric)}/{self.name}': metric})
                 if self.verbose:
                     epoch_bar.update(1)
                     epoch_bar.set_description(f'{self.name} train loss: {loss:.4f}, metric value: {metric:.4f}')
@@ -193,8 +186,7 @@ class FederatedGym:
                  optimizer_params: Optional[dict] = None,
                  scheduler: object = None,
                  metric: callable = metrics.balanced_accuracy_score,
-                 verbose: bool = True,
-                 log: bool = True):
+                 verbose: bool = True):
         self.client_train_loaders = client_train_loaders
         self.val_loader = val_loader
         self.global_model = model
@@ -204,7 +196,6 @@ class FederatedGym:
         self.scheduler = scheduler
         self.metric = metric
         self.verbose = verbose
-        self.log = log
 
     def train(self, epochs: int, rounds: int) -> Tuple[nn.Module, List[nn.Module]]:
         best_model = deepcopy(self.global_model)
@@ -221,8 +212,6 @@ class FederatedGym:
                 best_model = deepcopy(self.global_model)
                 best_client_models = client_models
                 best_metric = metric
-            if self.log:
-                wandb.log({f'{str(self.metric)}/global': metric})
             self.global_model.cpu()
             if self.verbose:
                 print(f"metric value: {metric:.4f} for round nr {train_round}")
@@ -247,7 +236,7 @@ class FederatedGym:
                            model=client_model,
                            optimizer=optimizer,
                            criterion=self.criterion,
-                           name=f"client number {client_number+1}", log=self.log)
+                           name=f"client number {client_number+1}")
         return client_gym
 
     def _aggregate_models(self, client_models: List[nn.Module]):
@@ -268,7 +257,7 @@ class FederatedGym:
         label_list = []
         self.global_model.eval()
         for idx, (inputs, labels) in enumerate(self.val_loader):
-            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            inputs, labels = inputs.to(DEVICE), labels.to(DEVICE)
             outputs = self.global_model(inputs)
             output_list.extend(outputs.detach().tolist())
             label_list.extend(labels.detach().tolist())
@@ -301,8 +290,7 @@ class FederatedUnlearnGym(FederatedGym):
                                      global_model=self.global_model, criterion=self.criterion,
                                      optimizer=untrain_optimizer, verbose=True,
                                      metric=self.metric,
-                                     delta=self.delta, tau=self.tau, n_clients=len(self.client_train_loaders) + 1,
-                                     log=self.log)
+                                     delta=self.delta, tau=self.tau, n_clients=len(self.client_train_loaders) + 1)
 
         self.global_model = unfed_gym.untrain(epochs=client_untrain_epochs)
         unlearned_model = deepcopy(self.global_model)
