@@ -38,9 +38,11 @@ class InitialState(AppState):
         input_model = config['input_model']
         n_classes = config['n_classes']
         in_features = config['in_features']
+        n_clients = config['n_clients']
         hyper_params = config['hyper_params']
         self.store('n_classes', n_classes)
         self.store('in_features', in_features)
+        self.store('n_clients', n_clients)
         self.store('delta', hyper_params['delta'])
         self.store('tau', hyper_params['tau'])
         self.store('opt_lr', hyper_params['opt_lr'])
@@ -88,7 +90,7 @@ class ComputeState(AppState):
         unclient_split = train_test_split(images, labels, stratify=labels, train_size=0.7)
         unclient_train_images, unclient_val_images, unclient_train_labels, unclient_val_labels = unclient_split
 
-        unclient_train_set = CustomDataSet(images=images, labels=labels)
+        unclient_train_set = CustomDataSet(images=unclient_train_images, labels=unclient_train_labels)
 
         unclient_train_loader = DataLoader(unclient_train_set, batch_size=256, shuffle=True, num_workers=2,
                                            persistent_workers=False)
@@ -110,6 +112,7 @@ class ComputeState(AppState):
         criterion = nn.CrossEntropyLoss()
         optimizer_params = {'lr': opt_lr, 'weight_decay': opt_weight_decay}
         untrain_optimizer = optim.AdamW(unclient_model.parameters(), lr=opt_lr, weight_decay=opt_weight_decay)
+        n_clients = self.load('n_clients')
 
         self.log('starting federated unlearning')
         unfed_gym = FederatedUnlearnGym(unclient_model=unclient_model,
@@ -121,7 +124,7 @@ class ComputeState(AppState):
                                         criterion=criterion,
                                         optimizer=optimizer, verbose=True,
                                         metric=metrics.balanced_accuracy_score,
-                                        delta=delta, tau=tau)
+                                        delta=delta, tau=tau, n_clients=n_clients)
 
         untrained_global_model, untrained_client_models, untrained_client_model = unfed_gym.untrain(
             client_untrain_epochs=5,
