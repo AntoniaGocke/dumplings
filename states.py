@@ -3,10 +3,10 @@ import bios
 import numpy as np
 import pandas as pd
 from classes.CNN import CNN
-from classes.UntrainFed import Gym, UnlearnGym, FederatedGym, FederatedUnlearnGym,ClientUnlearnGym
+from classes.UntrainFed import Gym, UnlearnGym, FederatedGym, FederatedUnlearnGym, ClientUnlearnGym
 from sklearn.model_selection import train_test_split
 from classes.CustomDataset import CustomDataSet
-from torch import optim
+from torch import optim, load
 from torch.utils.data import DataLoader
 import torch.nn as nn
 from sklearn import metrics
@@ -28,48 +28,43 @@ TERMINAL_STATE = 'terminal'
 class InitialState(AppState):
 
     def register(self):
-        self.register_transition(
-            COMPUTE_STATE)  # We declare that 'terminal' state is accessible from the 'initial' state.
+        self.register_transition(COMPUTE_STATE)
 
     def run(self):
         self.log('Reading configuration file...')
         config = bios.read(f'{INPUT_DIR}/config.yaml')
         self.log(f'{config}')
-        delta = config['delta']
-        tau = config['tau']
-        opt_lr = config['opt_lr']
-        opt_weight_decay = config['opt_weight_decay']
         input_file = config['input_file']
         input_model = config['input_model']
-        self.store('delta', config['delta'])
-        self.store('tau', config['tau'])
-        self.store('opt_lr', config['opt_lr'])
-        self.store('opt_weight_decay', config['opt_weight_decay'])
-        # needs to be changed to input from one client, not whole mnist
-        self.store('input_file', config['input_file'])
+        n_classes = config['n_classes']
+        in_features = config['in_features']
+        hyper_params = config['hyper_params']
+        self.store('n_classes', n_classes)
+        self.store('in_features', in_features)
+        self.store('delta', hyper_params['delta'])
+        self.store('tau', hyper_params['tau'])
+        self.store('opt_lr', hyper_params['opt_lr'])
+        self.store('opt_weight_decay', hyper_params['opt_weight_decay'])
         self.log('Done reading configuration.')
 
-        '''
-        np.load(input.npz)['images']
-        np.load(input.npz)['labels']
-        '''
-        # read Images from npz
+        # load npz file
+        npz_file = np.load(f'{INPUT_DIR}/{input_file}', allow_pickle=True)
+
+        # read images from npz
         self.log('Reading untraining images...')
-        inputImgs = np.load(f'{INPUT_DIR}/{input_file}')['images']
-        self.store('input_images', inputImgs)
+        input_images = npz_file['data']
+        self.store('input_images', input_images)
 
         #read labels from npz
         self.log('Reading untraining labels...')
-        inputLabs = np.load(f'{INPUT_DIR}/{input_file}')['labels']
-        self.store('input_lab', inputLabs)
+        input_labels = npz_file['targets']
+        self.store('input_labels', input_labels)
 
         # load model
         self.log('Reading model')
-        model = CNN()
-        model.load(f'{INPUT_DIR}/{input_model}')
+        model = CNN(n_classes=n_classes, in_features=in_features)
+        model = load(f'{INPUT_DIR}/{input_model}')
         self.store('input_model', model)
-
-        self.store('iteration', 0)
 
         return COMPUTE_STATE
 
@@ -78,17 +73,16 @@ class InitialState(AppState):
 class ComputeState(AppState):
 
     def register(self):
-        self.register_transition(COMPUTE_STATE,
-                                 role=Role.PARTICIPANT)
-        self.register_transition(AGGREGATE_STATE, role=Role.COORDINATOR)
         self.register_transition(WRITE_STATE)
 
     def run(self):
         global_model = self.load('input_model')
-        images = self.load('input_img')
-        labels = self.load('input_lab')
+        images = self.load('input_images')
+        labels = self.load('input_labels')
+        n_classes = self.load('n_classes')
+        in_features = self.load('in_features')
 
-        unclient_model = CNN()
+        unclient_model = CNN(n_classes=n_classes, in_features=in_features)
 
         self.log('build train, val split for unlearning client')
         unclient_split = train_test_split(images, labels, stratify=labels, train_size=0.7)
@@ -135,10 +129,7 @@ class ComputeState(AppState):
             federated_rounds=1,
             untrain_optimizer=untrain_optimizer)
 
-        self.store('iteration', 0)
-        self.send_data_to_coordinator(unclient_model.coef_, unclient_model.intercept_)
-
-        return COMPUTE_STATE
+        return WRITE_STATE
 
 
 @app_state(WRITE_STATE)

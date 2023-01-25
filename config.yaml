@@ -1,12 +1,10 @@
-dumplings:
-
-  input_file: 'train.npz'
-  input_model: 'model.pt'
-
-
-  hyper_params:
-    delta: None
-    tau: 0.5
-    #OptimizerValues
-    opt_lr: 0.001
-    opt_weight_decay: 0.05
+input_file: 'train.npz'
+input_model: 'model.pt'
+n_classes: 10
+in_features: 1
+hyper_params:
+  delta: None
+  tau: 0.5
+  #OptimizerValues
+  opt_lr: 0.001
+  opt_weight_decay: 0.05

@@ -6,17 +6,17 @@ from torch import nn, Tensor, inference_mode
 import torch.optim.optimizer
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from typing import List, Callable, Tuple
+from typing import List, Callable, Tuple, Union
 
+DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-DEVICE = torch.device('cuda') if torch.cuda.is_available() else 'cpu')
 class Gym:
     def __init__(self,
                  model: nn.Module,
                  optimizer: torch.optim.Optimizer,
                  criterion: nn.Module,
                  train_loader: DataLoader,
-                 val_loader: DataLoader | None = None,
+                 val_loader: Union[DataLoader, None] = None,
                  scheduler: object = None,
                  metric: Optional[Callable] = None,
                  verbose: bool = True,
@@ -138,7 +138,7 @@ class ClientUnlearnGym(UnlearnGym):
         ref_model = deepcopy(self.global_model)
         param_iterator = zip(self.global_model.parameters(), self.model.parameters(), ref_model.parameters())
         for global_parameter, client_parameter, ref_parameter in param_iterator:
-            diff_parameter = 1 / (self.n_clients - 1) * (self.n_clients * global_parameter - client_parameter)
+            diff_parameter = 1 / (self.n_clients - 1) * (self.n_clients * global_parameter - client_parameter) # nur 1 Client -> Division by 0
             ref_parameter.data = diff_parameter
         return ref_model
 
@@ -290,7 +290,7 @@ class FederatedUnlearnGym(FederatedGym):
                                      global_model=self.global_model, criterion=self.criterion,
                                      optimizer=untrain_optimizer, verbose=True,
                                      metric=self.metric,
-                                     delta=self.delta, tau=self.tau, n_clients=len(self.client_train_loaders) + 1)
+                                     delta=self.delta, tau=self.tau, n_clients=1)
 
         self.global_model = unfed_gym.untrain(epochs=client_untrain_epochs)
         unlearned_model = deepcopy(self.global_model)
