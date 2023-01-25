@@ -1,5 +1,0 @@
-data: data.csv
-target_value: target
-sep: ","
-max_iteration: 10
-pred: pred.csv

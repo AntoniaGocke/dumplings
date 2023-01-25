@@ -1,24 +1,22 @@
+from FeatureCloud.app.engine.app import AppState, app_state, Role
 import bios
 import numpy as np
 import pandas as pd
 from classes.CNN import CNN
 from classes.UntrainFed import Gym, UnlearnGym, FederatedGym, FederatedUnlearnGym,ClientUnlearnGym
-from FeatureCloud.app.engine.app import AppState, app_state, Role
 from sklearn.model_selection import train_test_split
+from classes.CustomDataset import CustomDataSet
 from torch import optim
 from torch.utils.data import DataLoader
-from torch import nn
+import torch.nn as nn
 from sklearn import metrics
-from classes.CustomDataset import CustomDataSet
 
-name = 'dumplings'
 
 INPUT_DIR = '/mnt/input'
 OUTPUT_DIR = '/mnt/output'
 
 INITIAL_STATE = 'initial'
 COMPUTE_STATE = 'compute'
-AGGREGATE_STATE = 'aggregate'
 WRITE_STATE = 'write'
 TERMINAL_STATE = 'terminal'
 
@@ -49,7 +47,7 @@ class InitialState(AppState):
         self.store('opt_weight_decay', config['opt_weight_decay'])
         # needs to be changed to input from one client, not whole mnist
         self.store('input_file', config['input_file'])
-        self.log(f'Done reading configuration.')
+        self.log('Done reading configuration.')
 
         '''
         np.load(input.npz)['images']

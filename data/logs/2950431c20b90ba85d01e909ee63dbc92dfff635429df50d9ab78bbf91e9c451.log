@@ -1,0 +1,76 @@
+2023-01-20 14:19:02,082 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2023-01-20 14:19:02,083 INFO supervisord started with pid 7
+2023-01-20 14:19:03,086 INFO spawned: 'nginx' with pid 10
+2023-01-20 14:19:03,088 INFO spawned: 'app' with pid 11
+Bottle v0.12.23 server starting up (using WSGIRefServer())...
+Listening on http://localhost:5000/
+Hit Ctrl-C to quit.
+
+2023-01-20 14:19:04,792 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-01-20 14:19:04,792 INFO success: app entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+[CTRL] POST /setup
+[Time: 20.01.23 14:19:05] [Level: info] id: 72acae8329f77484
+[Time: 20.01.23 14:19:05] [Level: info] coordinator: False
+[Time: 20.01.23 14:19:05] [Level: info] clients: ['72acae8329f77484', 'c5c0d98699e6276d']
+[Time: 20.01.23 14:19:05] [Level: info] state: initial
+[Time: 20.01.23 14:19:05] [Level: info] [State: initial]  Splits order:
+[Time: 20.01.23 14:19:05] [Level: info] [State: initial] Split 0: /mnt/input
+127.0.0.1 - - [20/Jan/2023 14:19:05] "POST /api/setup HTTP/1.0" 200 0
+[Time: 20.01.23 14:19:05] [Level: info] [State: initial] Getting sample shape from /mnt/input/mnist.npz dataset
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:06] "GET /api/status HTTP/1.0" 200 149
+[CTRL] POST /data
+127.0.0.1 - - [20/Jan/2023 14:19:07] "POST /api/data?client=c5c0d98699e6276d HTTP/1.0" 200 0
+[Time: 20.01.23 14:19:08] [Level: info] transition: Local Update
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:09] "GET /api/status HTTP/1.0" 200 149
+[Time: 20.01.23 14:19:09] [Level: info] state: Local Update
+[Time: 20.01.23 14:19:09] [Level: info] [State: Local Update] Iteration 1: Update model #0
+/usr/local/lib/python3.8/site-packages/torch/nn/functional.py:718: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at  /pytorch/c10/core/TensorImpl.h:1156.)
+  return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
+/mnt/input/cnn.py:21: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
+  return F.log_softmax(x)
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:12] "GET /api/status HTTP/1.0" 200 140
+127.0.0.1 - - [20/Jan/2023 14:19:15] "GET /api/status HTTP/1.0" 200 140
+[CTRL] GET /status
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:18] "GET /api/status HTTP/1.0" 200 140
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:21] "GET /api/status HTTP/1.0" 200 140
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:24] "GET /api/status HTTP/1.0" 200 140
+Epoch 1: Loss= 0.64, Accuracy=0.80
+127.0.0.1 - - [20/Jan/2023 14:19:27] "GET /api/status HTTP/1.0" 200 140
+[CTRL] GET /status
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:30] "GET /api/status HTTP/1.0" 200 140
+[Time: 20.01.23 14:19:32] [Level: info] transition: Local Update
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:33] "GET /api/status HTTP/1.0" 200 208
+[CTRL] GET /data
+127.0.0.1 - - [20/Jan/2023 14:19:33] "GET /api/data HTTP/1.0" 200 436463
+[Time: 20.01.23 14:19:33] [Level: info] state: Local Update
+[CTRL] POST /data
+127.0.0.1 - - [20/Jan/2023 14:19:34] "POST /api/data?client=c5c0d98699e6276d HTTP/1.0" 200 0
+[Time: 20.01.23 14:19:34] [Level: info] transition: Write Results
+[Time: 20.01.23 14:19:35] [Level: info] state: Write Results
+[Time: 20.01.23 14:19:35] [Level: info] [State: Write Results] Writing the results for of local test-set #0
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:36] "GET /api/status HTTP/1.0" 200 137
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:39] "GET /api/status HTTP/1.0" 200 137
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:42] "GET /api/status HTTP/1.0" 200 137
+127.0.0.1 - - [20/Jan/2023 14:19:45] "GET /api/status HTTP/1.0" 200 137
+[CTRL] GET /status
+[Time: 20.01.23 14:19:48] [Level: info] transition: terminal
+[Time: 20.01.23 14:19:48] [Level: info] done
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:48] "GET /api/status HTTP/1.0" 200 130
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:51] "GET /api/status HTTP/1.0" 200 130
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:54] "GET /api/status HTTP/1.0" 200 130
+[CTRL] GET /status
+127.0.0.1 - - [20/Jan/2023 14:19:57] "GET /api/status HTTP/1.0" 200 130
