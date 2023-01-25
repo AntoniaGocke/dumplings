@@ -1,0 +1,95 @@
+2023-01-24 13:51:19,607 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2023-01-24 13:51:19,610 INFO supervisord started with pid 7
+2023-01-24 13:51:20,616 INFO spawned: 'app' with pid 8
+2023-01-24 13:51:20,620 INFO spawned: 'nginx' with pid 9
+Bottle v0.12.23 server starting up (using WSGIRefServer())...
+Listening on http://localhost:5000/
+Hit Ctrl-C to quit.
+
+2023-01-24 13:51:21,897 INFO success: app entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2023-01-24 13:51:21,898 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+[CTRL] POST /setup
+[Time: 24.01.23 13:51:23] [Level: info] id: eb82a0bac5580857
+[Time: 24.01.23 13:51:23] [Level: info] coordinator: True
+[Time: 24.01.23 13:51:23] [Level: info] clients: ['eb82a0bac5580857']
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.8/site-packages/bottle.py", line 876, in _handle
+    return route.call(**args)
+  File "/root/.local/lib/python3.8/site-packages/bottle.py", line 1756, in wrapper
+    rv = callback(*a, **ka)
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/api/http_ctrl.py", line 21, in ctrl_setup
+    app.handle_setup(payload.get('id'), payload.get('coordinator'), payload.get('clients'))
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/engine/app.py", line 162, in handle_setup
+    self.log('initial state not found', level=LogLevel.FATAL)
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/engine/app.py", line 343, in log
+    raise RuntimeError(msg)
+RuntimeError: [Time: 24.01.23 13:51:23] [Level: fatal] initial state not found
+127.0.0.1 - - [24/Jan/2023 13:51:23] "POST /api/setup HTTP/1.0" 500 751
+[CTRL] POST /setup
+[Time: 24.01.23 13:51:28] [Level: info] id: eb82a0bac5580857
+[Time: 24.01.23 13:51:28] [Level: info] coordinator: True
+[Time: 24.01.23 13:51:28] [Level: info] clients: ['eb82a0bac5580857']
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.8/site-packages/bottle.py", line 876, in _handle
+    return route.call(**args)
+  File "/root/.local/lib/python3.8/site-packages/bottle.py", line 1756, in wrapper
+    rv = callback(*a, **ka)
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/api/http_ctrl.py", line 21, in ctrl_setup
+    app.handle_setup(payload.get('id'), payload.get('coordinator'), payload.get('clients'))
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/engine/app.py", line 162, in handle_setup
+    self.log('initial state not found', level=LogLevel.FATAL)
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/engine/app.py", line 343, in log
+    raise RuntimeError(msg)
+RuntimeError: [Time: 24.01.23 13:51:28] [Level: fatal] initial state not found
+127.0.0.1 - - [24/Jan/2023 13:51:28] "POST /api/setup HTTP/1.0" 500 751
+[CTRL] POST /setup
+[Time: 24.01.23 13:51:37] [Level: info] id: eb82a0bac5580857
+[Time: 24.01.23 13:51:37] [Level: info] coordinator: True
+[Time: 24.01.23 13:51:37] [Level: info] clients: ['eb82a0bac5580857']
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.8/site-packages/bottle.py", line 876, in _handle
+    return route.call(**args)
+  File "/root/.local/lib/python3.8/site-packages/bottle.py", line 1756, in wrapper
+    rv = callback(*a, **ka)
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/api/http_ctrl.py", line 21, in ctrl_setup
+    app.handle_setup(payload.get('id'), payload.get('coordinator'), payload.get('clients'))
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/engine/app.py", line 162, in handle_setup
+    self.log('initial state not found', level=LogLevel.FATAL)
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/engine/app.py", line 343, in log
+    raise RuntimeError(msg)
+RuntimeError: [Time: 24.01.23 13:51:37] [Level: fatal] initial state not found
+127.0.0.1 - - [24/Jan/2023 13:51:37] "POST /api/setup HTTP/1.0" 500 751
+[CTRL] POST /setup
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.8/site-packages/bottle.py", line 876, in _handle
+    return route.call(**args)
+  File "/root/.local/lib/python3.8/site-packages/bottle.py", line 1756, in wrapper
+    rv = callback(*a, **ka)
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/api/http_ctrl.py", line 21, in ctrl_setup
+    app.handle_setup(payload.get('id'), payload.get('coordinator'), payload.get('clients'))
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/engine/app.py", line 162, in handle_setup
+    self.log('initial state not found', level=LogLevel.FATAL)
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/engine/app.py", line 343, in log
+    raise RuntimeError(msg)
+RuntimeError: [Time: 24.01.23 13:51:54] [Level: fatal] initial state not found
+[Time: 24.01.23 13:51:54] [Level: info] id: eb82a0bac5580857
+[Time: 24.01.23 13:51:54] [Level: info] coordinator: True
+[Time: 24.01.23 13:51:54] [Level: info] clients: ['eb82a0bac5580857']
+127.0.0.1 - - [24/Jan/2023 13:51:54] "POST /api/setup HTTP/1.0" 500 751
+[CTRL] POST /setup
+[Time: 24.01.23 13:52:27] [Level: info] id: eb82a0bac5580857
+[Time: 24.01.23 13:52:27] [Level: info] coordinator: True
+[Time: 24.01.23 13:52:27] [Level: info] clients: ['eb82a0bac5580857']
+Traceback (most recent call last):
+  File "/root/.local/lib/python3.8/site-packages/bottle.py", line 876, in _handle
+    return route.call(**args)
+  File "/root/.local/lib/python3.8/site-packages/bottle.py", line 1756, in wrapper
+    rv = callback(*a, **ka)
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/api/http_ctrl.py", line 21, in ctrl_setup
+    app.handle_setup(payload.get('id'), payload.get('coordinator'), payload.get('clients'))
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/engine/app.py", line 162, in handle_setup
+    self.log('initial state not found', level=LogLevel.FATAL)
+  File "/root/.local/lib/python3.8/site-packages/FeatureCloud/app/engine/app.py", line 343, in log
+    raise RuntimeError(msg)
+RuntimeError: [Time: 24.01.23 13:52:27] [Level: fatal] initial state not found
+127.0.0.1 - - [24/Jan/2023 13:52:27] "POST /api/setup HTTP/1.0" 500 751
