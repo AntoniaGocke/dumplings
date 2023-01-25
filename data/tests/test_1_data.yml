@@ -1,9 +1,9 @@
 id: 1
 image: dumplings
-createdat: 2023-01-11T11:02:58.542950922Z
+createdat: 2023-01-25T08:15:38.729099327Z
 relayaddress: localhost
 queryinterval: 3
 dirs:
-- client_1
-gendir: ""
-resultdir: /data/tests
+- unlearning_data/c1
+gendir: unlearning_data/generic
+resultdir: /data/tests/results
