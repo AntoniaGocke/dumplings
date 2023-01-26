@@ -84,20 +84,17 @@ class ComputeState(AppState):
 
         unclient_model = CNN(n_classes=n_classes, in_features=in_features)
 
-        self.log('build train, val split for unlearning client')
+        self.log('Splitting data for unlearning client...')
         unclient_split = train_test_split(images, labels, stratify=labels, train_size=0.7)
         unclient_train_images, unclient_val_images, unclient_train_labels, unclient_val_labels = unclient_split
 
-        unclient_train_set = CustomDataSet(images=images, labels=labels)
-
+        self.log('Building training set und generating training loader...')
+        unclient_train_set = CustomDataSet(images=unclient_train_images, labels=unclient_train_labels)
         unclient_train_loader = DataLoader(unclient_train_set, batch_size=256, shuffle=True, num_workers=2,
                                            persistent_workers=False)
+
+        self.log('Building validation set and generatin validation loader...')
         unclient_val_set = CustomDataSet(images=unclient_val_images, labels=unclient_val_labels)
-        unclient_val_loader = DataLoader(unclient_val_set, batch_size=128, shuffle=True, num_workers=2,
-                                         persistent_workers=False)
-
-        unclient_train_loader = DataLoader(unclient_train_set, batch_size=256, shuffle=True, num_workers=2,
-                                           persistent_workers=False)
         unclient_val_loader = DataLoader(unclient_val_set, batch_size=128, shuffle=True, num_workers=2,
                                          persistent_workers=False)
 
