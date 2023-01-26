@@ -4,7 +4,6 @@ n_classes: 10
 in_features: 1
 n_clients: 4
 hyper_params:
-  delta: None
   tau: 0.5
   #OptimizerValues
   opt_lr: 0.001

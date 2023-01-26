@@ -43,10 +43,9 @@ class InitialState(AppState):
         self.store('n_classes', n_classes)
         self.store('in_features', in_features)
         self.store('n_clients', n_clients)
-        self.store('delta', hyper_params['delta'])
-        self.store('tau', hyper_params['tau'])
-        self.store('opt_lr', hyper_params['opt_lr'])
-        self.store('opt_weight_decay', hyper_params['opt_weight_decay'])
+        self.store('tau', float(hyper_params['tau']))
+        self.store('opt_lr', float(hyper_params['opt_lr']))
+        self.store('opt_weight_decay', float(hyper_params['opt_weight_decay']))
         self.log('Done reading configuration.')
 
         # load npz file
@@ -102,13 +101,12 @@ class ComputeState(AppState):
                                          persistent_workers=False)
 
         self.log('initialization for unlearning')
-        delta = self.load('delta')
         tau = self.load('tau')
         opt_lr = self.load('opt_lr')
         opt_weight_decay = self.load('opt_weight_decay')
-        optimizer = optim.AdamW
+        optimizer = optim.AdamW # evtl. mit Parametern aufrufen; global model?
         criterion = nn.CrossEntropyLoss()
-        optimizer_params = {'lr': opt_lr, 'weight_decay': opt_weight_decay}
+        #optimizer_params = {'lr': opt_lr, 'weight_decay': opt_weight_decay}
         untrain_optimizer = optim.AdamW(unclient_model.parameters(), lr=opt_lr, weight_decay=opt_weight_decay)
         n_clients = self.load('n_clients')
 
@@ -122,9 +120,9 @@ class ComputeState(AppState):
                                         criterion=criterion,
                                         optimizer=optimizer, verbose=True,
                                         metric=metrics.balanced_accuracy_score,
-                                        delta=delta, tau=tau, n_clients=n_clients)
+                                        delta=None, tau=tau, n_clients=n_clients)
 
-        untrained_global_model, untrained_client_models, untrained_client_model = unfed_gym.untrain(
+        untrained_global_model = unfed_gym.untrain(
             client_untrain_epochs=5,
             federated_epochs=1,
             federated_rounds=1,

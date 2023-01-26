@@ -6,7 +6,7 @@ from torch import nn, Tensor, inference_mode
 import torch.optim.optimizer
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from typing import List, Callable, Tuple
+from typing import List, Callable, Tuple, Union
 
 
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else ('cpu')
@@ -16,7 +16,7 @@ class Gym:
                  optimizer: torch.optim.Optimizer,
                  criterion: nn.Module,
                  train_loader: DataLoader,
-                 val_loader: DataLoader | None = None,
+                 val_loader: Union[DataLoader, None] = None,
                  scheduler: object = None,
                  metric: Optional[Callable] = None,
                  verbose: bool = True,
@@ -295,5 +295,4 @@ class FederatedUnlearnGym(FederatedGym):
 
         self.global_model = unfed_gym.untrain(epochs=client_untrain_epochs)
         unlearned_model = deepcopy(self.global_model)
-        global_model, client_models = self.train(epochs=federated_epochs, rounds=federated_rounds)
-        return global_model, client_models, unlearned_model
+        return unlearned_model

@@ -25,7 +25,7 @@ class CustomDataSet(Dataset):
         image = self.images[item]
         label = self.labels[item]
         image = self.transforms(image)
-        return image.to(torch.half), label
+        return image.to(torch.float32), label
 
 
 
