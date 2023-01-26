@@ -2,6 +2,7 @@ input_file: 'train.npz'
 input_model: 'model.pt'
 n_classes: 10
 in_features: 1
+n_clients: 4
 hyper_params:
   delta: None
   tau: 0.5
