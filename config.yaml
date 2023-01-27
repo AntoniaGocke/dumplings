@@ -1,5 +1,6 @@
 input_file: 'train.npz'
 input_model: 'model.pt'
+output_file: 'model.pt'
 n_classes: 10
 in_features: 1
 n_clients: 4

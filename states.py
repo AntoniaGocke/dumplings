@@ -6,11 +6,10 @@ from classes.CNN import CNN
 from classes.UntrainFed import Gym, UnlearnGym, FederatedGym, FederatedUnlearnGym, ClientUnlearnGym
 from sklearn.model_selection import train_test_split
 from classes.CustomDataset import CustomDataSet
-from torch import optim, load
+from torch import optim, load, save
 from torch.utils.data import DataLoader
 import torch.nn as nn
 from sklearn import metrics
-
 
 INPUT_DIR = '/mnt/input'
 OUTPUT_DIR = '/mnt/output'
@@ -19,10 +18,6 @@ INITIAL_STATE = 'initial'
 COMPUTE_STATE = 'compute'
 WRITE_STATE = 'write'
 TERMINAL_STATE = 'terminal'
-
-# FeatureCloud requires that apps define the at least the 'initial' state.
-# This state is executed after the app instance is started.
-
 
 @app_state(INITIAL_STATE)
 class InitialState(AppState):
@@ -46,6 +41,7 @@ class InitialState(AppState):
         self.store('tau', float(hyper_params['tau']))
         self.store('opt_lr', float(hyper_params['opt_lr']))
         self.store('opt_weight_decay', float(hyper_params['opt_weight_decay']))
+        self.store('output_file', config['output_file'])
         self.log('Done reading configuration.')
 
         # load npz file
@@ -101,14 +97,15 @@ class ComputeState(AppState):
                                          persistent_workers=False)
 
         self.log('initialization for unlearning')
-        tau = self.load('tau')
         opt_lr = self.load('opt_lr')
         opt_weight_decay = self.load('opt_weight_decay')
-        optimizer = optim.AdamW # evtl. mit Parametern aufrufen; global model?
-        criterion = nn.CrossEntropyLoss()
-        #optimizer_params = {'lr': opt_lr, 'weight_decay': opt_weight_decay}
         untrain_optimizer = optim.AdamW(unclient_model.parameters(), lr=opt_lr, weight_decay=opt_weight_decay)
+
+        criterion = nn.CrossEntropyLoss()
         n_clients = self.load('n_clients')
+        tau = self.load('tau')
+
+        optimizer = optim.AdamW # TODO: remove
 
         self.log('starting federated unlearning')
         unfed_gym = FederatedUnlearnGym(unclient_model=unclient_model,
@@ -122,12 +119,11 @@ class ComputeState(AppState):
                                         metric=metrics.balanced_accuracy_score,
                                         delta=None, tau=tau, n_clients=n_clients)
 
-        untrained_global_model = unfed_gym.untrain(
-            client_untrain_epochs=5,
-            federated_epochs=1,
-            federated_rounds=1,
-            untrain_optimizer=untrain_optimizer)
-
+        untrained_global_model = unfed_gym.untrain(client_untrain_epochs=5,
+                                                   federated_epochs=1,
+                                                   federated_rounds=1,
+                                                   untrain_optimizer=untrain_optimizer)
+        self.store('model', untrained_global_model)
         return WRITE_STATE
 
 
@@ -141,8 +137,5 @@ class WriteState(AppState):
         self.log('Output unlearned model')
         model = self.load('model')
         output_file = self.load('output_file')
-
+        save(model, f'{OUTPUT_DIR}/{output_file}')
         return TERMINAL_STATE
-
-
-
