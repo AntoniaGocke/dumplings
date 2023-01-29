@@ -1,16 +1,23 @@
 # FeatureCloud App Federated Unlearning
 
-This App can be ued with a CNN input from the fc-dep-learning App.
+This App can be used with a CNN input from the fc-dep-learning App.
 
 ## Input parameter needed:
-input_file: with the data which will be unlearned <br />
-input_model: the global model will be used as a constraint for the gradient ascent which should enable a faster convergence when relearning <br />
-### hyper_params: <br />
-    delta: None
-    tau: is the accuracy to which the model will be unlearned to, based on the Paper "Federated Unlearning: How to Efficiently Erase a Client in FL? (https://doi.org/10.48550/arXiv.2207.05521)" it will be set to 0.12 
-### OptimizerValues <br />
-    optName: 'AdamW' 
-    opt_lr: 0.001 
-    opt_weight_decay: 0.05 
+The following parameters are needed to be provided in the config - file.
 
+#### config.yaml
+input_file: 'train.npz' <br />
+input_model: 'model.pt' <br />
+output_file: 'model.pt' <br />
+n_classes: 10 <br />
+in_features: 1 <br />
+n_clients: 4 <br />
+hyper_params: <br />
+tau: 0.12 <br />
+OptimizerValues <br />
+opt_lr: 0.001 <br />
+opt_weight_decay: 0.05 <br /> 
 
+## Workflow
+
+First you have to obtain a trained model, which will be used as an input for the App. Additionally, the target data to be forgotten will also ba used as an input for the model. Using a projected gradient ascent, the loss will be maximized. The unlearned model will then need to be retreined using the featurecloud deep learning app, where the model can be used as an input and be retrained with the remaining data.
