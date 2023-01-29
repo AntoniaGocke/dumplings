@@ -3,7 +3,7 @@
 This App can be used with a CNN input from the fc-dep-learning App.
 
 ## Input parameter needed:
-The following parameters are needed to be provided in the config - file.
+The following parameters are needed to be provided in the config - file and need to cbe changed according to the data and the model.
 
 #### config.yaml <br />
 ```
